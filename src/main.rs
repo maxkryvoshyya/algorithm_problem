@@ -1,11 +1,30 @@
+use out_of_the_box::{check_key_any, i32_parse};
 fn main() {
-    let mut available = vec![240, 360];
-    let mut allowed = vec![240, 360];
-    let mut preferred = vec![720, 1080];
+    let available= vec![240, 360, 720];
+    let mut allowed = vec!["360", "any"];
+    let mut preferred = vec!["360", "720"];
 
-    out_of_the_box::ready_to_use(&mut available, &mut allowed, &mut preferred);
-    let result = out_of_the_box::attempt(&available, &allowed, &preferred);
-    
-    println!("available : {available:?}\nallowed : {allowed:?}\npreferred : {preferred:?}\nreturns : {result:?}");
+    check_key_any(&mut allowed); // Перевіряємо на значення 'any'
+    check_key_any(&mut preferred);
+
+    let allowed = i32_parse(allowed); // Конвертуємо Vec<&str> в Vec<i32>
+    let preferred = i32_parse(preferred);
+
+    let mut query = out_of_the_box::Value { // Присвоюємо змінній структуру, з новими значеннями
+        available,
+        allowed,
+        preferred,
+    };
+
+    query.ready_to_use(); // Сортування та видалення дублікатів
+
+    let res = query.attempt(); // Обробка даних алгоритмом
+
+    query.print_results(res); // Друк результатів
 }
+
+
+
+
+
 
