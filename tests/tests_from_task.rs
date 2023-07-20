@@ -1,228 +1,168 @@
+/* В цьому файлі зберігаються власні тести до алгоритму, основні тести по прикладах ТЗ знаходяться у lib.rs*/
 use out_of_the_box::*;
 
 #[test]
-fn query_1() {
-    let mut query = Value {
-        available: vec![240, 360, 720],
-        allowed: vec![360, 720],
-        preferred: vec![1080],
-    };
+    fn get_vec_of_value() 
+    {
+        
+        let query = Value 
+        {
+            available: vec![240, 720],
+            allowed: vec![240, 360, 720, 1080],
+            preferred: vec![240, 360],
+        };
 
-    query.ready_to_use();
+        let result = query.attempt();
 
-    let result = query.attempt();
+        assert_eq!(vec![240, 720], result);
 
-    assert_eq!(vec![720], result);
-}
+    }
 
-#[test]
-fn query_2() {
-    let mut query = Value {
-        available: vec![240, 720],
-        allowed: vec![360, 720],
-        preferred: vec![1080],
-    };
+    #[test]
+    fn equal_preffered() 
+    {
+        
+        let query = Value 
+        {
+            available: vec![240, 360, 720, 1080],
+            allowed: vec![240, 360, 720],
+            preferred: vec![360, 720],
+        };
 
-    query.ready_to_use();
+        let result = query.attempt();
 
-    let result = query.attempt();
+        assert_eq!(vec![360, 720], result);
 
-    assert_eq!(vec![720], result);
-}
+    }
 
-#[test]
-fn query_3() {
-    let mut query = Value {
-        available: vec![240],
-        allowed: vec![360, 720],
-        preferred: vec![1080],
-    };
+    #[test]
+    fn take_greater_than_preffered() 
+    {
+        
+        let query = Value 
+        {
+            available: vec![240, 360, 720, 1080],
+            allowed: vec![240, 360, 720],
+            preferred: vec![480],
+        };
 
-    query.ready_to_use();
+        let result = query.attempt();
 
-    let result = query.attempt();
+        assert_eq!(vec![720], result);
 
-    let empty_vector: Vec<i32> = Vec::new();
+    }
 
-    assert_eq!(empty_vector, result);
-}
+    #[test]
+    fn take_less_than_preffered() 
+    {
 
-#[test]
-fn query_4() {
-    let mut query = Value {
-        available: vec![240, 360, 720],
-        allowed: vec![240, 360, 720, 1080],
-        preferred: vec![240, 360],
-    };
+        let query = Value 
+        {
+            available: vec![240, 360],
+            allowed: vec![240, 360, 720],
+            preferred: vec![480],
+        };
 
-    query.ready_to_use();
+        let result = query.attempt();
 
-    let result = query.attempt();
+        assert_eq!(vec![360], result);
 
-    assert_eq!(vec![240, 360], result);
-}
+    }
 
-#[test]
-fn query_5() {
-    let mut query = Value {
-        available: vec![240, 720],
-        allowed: vec![240, 360, 720, 1080],
-        preferred: vec![240, 360],
-    };
+    #[test]
+    fn empty_vec() 
+    {
 
-    query.ready_to_use();
+        let query = Value 
+        {
+            available: vec![720],
+            allowed: vec![240, 360, 1080],
+            preferred: vec![240, 360],
+        };
 
-    let result = query.attempt();
+        let result = query.attempt();
+        let empty_vec: Vec<i32> = vec![];
 
-    assert_eq!(vec![240, 720], result);
-}
+        assert_eq!(empty_vec, result);
 
-#[test]
-fn query_6() {
-    let mut query = Value {
-        available: vec![240, 720],
-        allowed: vec![240, 360, 1080],
-        preferred: vec![240, 360],
-    };
+    }
 
-    query.ready_to_use();
+    #[test]
+    fn no_repeats_vec() 
+    {
 
-    let result = query.attempt();
+        let query = Value 
+        {
+            available: vec![240, 360],
+            allowed: vec![240, 360],
+            preferred: vec![720, 1080],
+        };
 
-    assert_eq!(vec![240], result);
-}
+        let result = query.attempt();
 
-#[test]
-fn query_7() {
-    let mut query = Value {
-        available: vec![720],
-        allowed: vec![240, 360, 1080],
-        preferred: vec![240, 360],
-    };
+        assert_eq!(vec![360], result);
 
-    query.ready_to_use();
+    }
 
-    let result = query.attempt();
+    #[test]
+    fn vec_sort() 
+    {
 
-    let empty_vector: Vec<i32> = Vec::new();
+        let mut query = Value 
+        {
+            available: vec![360, 240, 360, 720],
+            allowed: vec![1080, 720, 240, 720],
+            preferred: vec![240, 480],
+        };
 
-    assert_eq!(empty_vector, result);
-}
+        query.ready_to_use();
 
-#[test]
-fn query_8() {
-    let mut query = Value {
-        available: vec![240, 360],
-        allowed: vec![240, 360],
-        preferred: vec![720, 1080],
-    };
+        assert_eq!(vec![240, 360, 720], query.available);
 
-    query.ready_to_use();
+    }
 
-    let result = query.attempt();
+    #[test]
+    fn vec_sort_without_dublicate() 
+    {
 
-    assert_eq!(vec![360], result);
-}
+        let mut query = Value 
+        {
+            available: vec![360, 240, 360, 720],
+            allowed: vec![1080, 720, 240, 720],
+            preferred: vec![240, 480],
+        };
 
-#[test]
-fn query_9() {
-    let available= vec![240, 360, 720];
-    let mut allowed = vec!["360", "any"];
-    let mut preferred = vec!["360", "720"];
+        query.ready_to_use();
 
-    check_key_any(&mut allowed); 
-    check_key_any(&mut preferred);
+        let result = query.attempt();
 
-    let allowed = i32_parse(allowed); 
-    let preferred = i32_parse(preferred);
+        assert_eq!(vec![240, 720], result);
 
-    let mut query = Value { 
-        available,
-        allowed,
-        preferred,
-    };
+    }
 
-    query.ready_to_use();
+    #[test]
+    fn check_key_word_any() 
+    {
+        
+        let mut allowed = vec!["360", "any"];
+        let mut preferred = vec!["360", "720"];
 
-    let result = query.attempt();
+        check_key_any(&mut allowed);
+        check_key_any(&mut preferred);
 
-    assert_eq!(vec![360, 720], result);
-}
+        assert_eq!(vec!["240", "360", "480", "720", "1080"], allowed);
+        assert_eq!(vec!["360", "720"], preferred);
 
-#[test]
-#[ignore = "Mistake in algorithm"]
-fn query_10() {
-    let available= vec![240, 360, 720];
-    let mut allowed = vec!["240", "360", "720"];
-    let mut preferred = vec!["any", "720"];
+    }
 
-    check_key_any(&mut allowed); 
-    check_key_any(&mut preferred);
+    #[test]
+    fn check_i32_parse() 
+    {
 
-    let allowed = i32_parse(allowed); 
-    let preferred = i32_parse(preferred);
+        let allowed = vec!["240", "360", "480", "720", "1080"];
 
-    let mut query = Value { 
-        available,
-        allowed,
-        preferred,
-    };
+        let allowed = i32_parse(allowed);
 
-    query.ready_to_use();
-
-    let result = query.attempt();
-
-    assert_eq!(vec![240, 360, 720], result);
-}
-
-#[test]
-fn query_11() {
-    let available= vec![240, 360, 720];
-    let mut allowed = vec!["360", "1080"];
-    let mut preferred = vec!["any", "720"];
-
-    check_key_any(&mut allowed); 
-    check_key_any(&mut preferred);
-
-    let allowed = i32_parse(allowed); 
-    let preferred = i32_parse(preferred);
-
-    let mut query = Value { 
-        available,
-        allowed,
-        preferred,
-    };
-
-    query.ready_to_use();
-
-    let result = query.attempt();
-
-    assert_eq!(vec![360], result);
-}
-
-#[test]
-fn query_12() {
-    let available= vec![240, 360, 720];
-    let mut allowed = vec!["1080"];
-    let mut preferred = vec!["any", "720"];
-
-    check_key_any(&mut allowed); 
-    check_key_any(&mut preferred);
-
-    let allowed = i32_parse(allowed); 
-    let preferred = i32_parse(preferred);
-
-    let mut query = Value { 
-        available,
-        allowed,
-        preferred,
-    };
-
-    query.ready_to_use();
-
-    let result = query.attempt();
-
-    let empty_vector: Vec<i32> = Vec::new();
-
-    assert_eq!(empty_vector, result);
-}
+        assert_eq!(vec![240, 360, 480, 720, 1080], allowed);
+        
+    }
