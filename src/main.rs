@@ -1,4 +1,4 @@
-use out_of_the_box::{ check_key_any, i32_parse };
+use algorithm_problem::{ check_key_any, i32_parse };
 
 fn main() 
 {
@@ -13,7 +13,7 @@ fn main()
   let allowed = i32_parse( allowed ); /* <- Конвертація Vec<&str> в Vec<i32> */
   let preferred = i32_parse( preferred );
 
-  let mut query = out_of_the_box::Value /* <- Присвоюємо змінній структуру, з новими значеннями */
+  let mut query = algorithm_problem::Value /* <- Присвоюємо змінній структуру, з новими значеннями */
   { 
 
     available,
